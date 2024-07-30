@@ -8,8 +8,7 @@ var jwt = require('jsonwebtoken');
 const axios = require('axios')
 const fetch = require('../middleware/fetchdetails');
 const jwtSecret = "HaHa"
-// var foodItems= require('../index').foodData;
-// require("../index")
+
 //Creating a user and storing data to MongoDB Atlas, No Login Requiered
 router.post('/createuser', [
     body('email').isEmail(),
@@ -28,7 +27,6 @@ router.post('/createuser', [
     try {
         await User.create({
             name: req.body.name,
-            // password: req.body.password,  first write this and then use bcryptjs
             password: securePass,
             email: req.body.email,
             location: req.body.location
@@ -93,7 +91,7 @@ router.post('/login', [
 router.post('/getuser', fetch, async (req, res) => {
     try {
         const userId = req.user.id;
-        const user = await User.findById(userId).select("-password") // -password will not pick password from db.
+        const user = await User.findById(userId).select("-password") 
         res.send(user)
     } catch (error) {
         console.error(error.message)
@@ -101,6 +99,7 @@ router.post('/getuser', fetch, async (req, res) => {
 
     }
 })
+
 // Get logged in User details, Login Required.
 router.post('/getlocation', async (req, res) => {
     try {
@@ -112,8 +111,6 @@ router.post('/getlocation', async (req, res) => {
             .then(async res => {
                 // console.log(`statusCode: ${res.status}`)
                 console.log(res.data.results)
-                // let response = stringify(res)
-                // response = await JSON.parse(response)
                 let response = res.data.results[0].components;
                 console.log(response)
                 let { village, county, state_district, state, postcode } = response
@@ -132,9 +129,6 @@ router.post('/getlocation', async (req, res) => {
 })
 router.post('/foodData', async (req, res) => {
     try {
-        // console.log( JSON.stringify(global.foodData))
-        // const userId = req.user.id;
-        // await database.listCollections({name:"food_items"}).find({});
         res.send([global.foodData, global.foodCategory])
     } catch (error) {
         console.error(error.message)
@@ -148,7 +142,6 @@ router.post('/orderData', async (req, res) => {
     await data.splice(0,0,{Order_date:req.body.order_date})
     console.log("1231242343242354",req.body.email)
 
-    //if email not exisitng in db then create: else: InsertMany()
     let eId = await Order.findOne({ 'email': req.body.email })    
     console.log(eId)
     if (eId===null) {
